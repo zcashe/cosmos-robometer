@@ -5,7 +5,7 @@ const SITE = {
 };
 
 const NS = 'http://www.w3.org/2000/svg';
-const MEDIA = '../shared/';
+const MEDIA = 'shared/';
 const RM = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function h(tag, attrs, parent, text) {
@@ -881,7 +881,7 @@ function fail(err) {
 }
 
 setupSite();
-fetch('../shared/data.json')
+fetch('shared/data.json')
   .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
   .then(D => {
     gameInit(D);
