@@ -1,6 +1,6 @@
 const SITE = {
   authors: ['Nilson Rodriguez Cadenas', 'Zachary Elders', 'Sarkis Gafafyan', 'Tengjian Guo', 'Khang Thai', 'Bowen Jiang', 'Edward Shao'],
-  codeUrl: '',
+  codeUrl: 'https://github.com/zcashe/cosmos-robometer',
   reportUrl: ''
 };
 
