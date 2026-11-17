@@ -1,0 +1,32 @@
+[
+ {
+  "name": "bowl_plate",
+  "language": "put the bowl on the plate",
+  "bddl": "bddl/bowl_plate.bddl",
+  "init": "init/bowl_plate.pkl"
+ },
+ {
+  "name": "cheese_bowl",
+  "language": "put the cream cheese in the bowl",
+  "bddl": "bddl/cheese_bowl.bddl",
+  "init": "init/cheese_bowl.pkl"
+ },
+ {
+  "name": "bowl_stove",
+  "language": "put the bowl on the stove",
+  "bddl": "bddl/bowl_stove.bddl",
+  "init": "init/bowl_stove.pkl"
+ },
+ {
+  "name": "bottle_cabinet",
+  "language": "put the wine bottle on top of the cabinet",
+  "bddl": "bddl/bottle_cabinet.bddl",
+  "init": "init/bottle_cabinet.pkl"
+ },
+ {
+  "name": "ketchup_basket",
+  "language": "pick up the ketchup and place it in the basket",
+  "bddl": "bddl/ketchup_basket.bddl",
+  "init": "init/ketchup_basket.pkl"
+ }
+]
