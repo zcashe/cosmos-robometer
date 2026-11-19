@@ -18,7 +18,7 @@
   <h1>Robometer-Guided <span class="nb">Best-of-<i>N</i></span> Distillation for Robust Robot Policies</h1>
   <p class="byline" id="site-authors" hidden></p>
   <p class="byline byline-c">CSCI 566, Fall 2026<span id="site-links"></span></p>
-  <p class="plate-sum">Shift the scene by 10 cm and a near-perfect robot policy drops to <b>64.1%</b> success. We let a video model pick the best of four attempts, then fine-tune the policy on those picks. The fine-tuned policy reaches <b class="key">70.4%</b> in a single attempt.</p>
+  <p class="plate-sum">Shift the scene by 10 cm and a near-perfect robot policy drops to <b>64.1%</b> success. We let a video model pick the best of four attempts, then fine-tune the policy on those picks. The fine-tuned policy reaches <b class="key">70.4%</b> in a single attempt, and the gain holds when we train it again.</p>
 </header>
 
 <section class="panel panel-game" id="judge" aria-labelledby="judge-h">
@@ -132,6 +132,26 @@
     <figcaption class="cap">250 held-out start states, 95% intervals. Search time counts the four rollouts only. Perfect pick is best-of-4 judged by the simulator's true outcome.</figcaption>
   </figure>
   <div class="sub">
+    <h3>Does it repeat?</h3>
+    <p class="txt-n">We trained the student two more times with new random seeds. All three runs beat the base policy scored alongside them, by 7.9 points on average (95% CI +2.7 to +13.2).</p>
+    <div class="tbl-wrap">
+      <table class="sets">
+        <thead><tr><th scope="col">Policy</th><th scope="col">Held-out success</th><th scope="col">vs base, 95% CI</th></tr></thead>
+        <tbody>
+          <tr><td>Base policy</td><td class="n">64.0%</td><td class="n">n/a</td></tr>
+          <tr class="key"><td>Student, first training run</td><td class="n">70.4%</td><td class="n">+6.4 [+0.8, +12.0]</td></tr>
+          <tr class="key"><td>Student, second run</td><td class="n">73.2%</td><td class="n">+9.2 [+3.2, +15.6]</td></tr>
+          <tr class="key"><td>Student, third run</td><td class="n">72.0%</td><td class="n">+8.0 [+2.0, +14.0]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">One evaluation of 250 held-out start states per row, all scored in the same batch.</p>
+  </div>
+  <div class="sub">
+    <h3>Nothing lost on the original scenes</h3>
+    <p class="txt-n">The student was trained only on shifted scenes. With the shift removed it solves 244 of the same 250 start states (97.6%), against 243 (97.2%) for the base policy.</p>
+  </div>
+  <div class="sub">
     <h3>Every held-out start state</h3>
     <p class="txt-n">10 tasks × 25 start states. A filled dot is a success. Pick a second system to see which states changed hands.</p>
     <div class="map-ctl">
@@ -165,7 +185,7 @@
   <div class="ph"><h2 id="controls-h">Controls</h2></div>
   <div class="txt">
     <p>Three more students were trained the same way on other sets. Training on unfiltered attempts or on the base judge's picks made the policy worse than leaving it alone.</p>
-    <p>The sets differ in size and every student got the same 2,000 updates, so we cannot yet separate set size from set quality.</p>
+    <p>Even a set made only of true successes did no better than the base policy. Swapping the judge's 11 mistaken picks for true successes did not help either: that student scored 68.0%, 6 points below the judge-picked one evaluated with it.</p>
   </div>
   <div class="chart tbl-wrap" id="chart-sets"><p class="await">Waiting for data</p></div>
   <p class="cap" id="sets-pair"></p>
@@ -183,11 +203,45 @@
   </figure>
 </section>
 
+<section class="panel" id="prefers" aria-labelledby="prefers-h">
+  <div class="ph"><h2 id="prefers-h">What the judge prefers</h2></div>
+  <div class="txt">
+    <p>We looked at how the LIBERO-finetuned judge scored the 1,000 training rollouts.</p>
+  </div>
+  <ul class="limits">
+    <li>It only knows at the end. Its score separates success from failure at the last frame it sees, and barely at all before that.</li>
+    <li>It is strict. It scores 36% of the attempts that really succeeded below the 0.5 cut-off, and lets through 14% of the failures.</li>
+    <li>It does not favor quick successes. Among successful attempts from the same start, its top pick is the shortest one 26% of the time, where chance would give 40%.</li>
+  </ul>
+</section>
+
+<section class="panel" id="adaptive" aria-labelledby="adaptive-h">
+  <div class="ph"><h2 id="adaptive-h">Can search be made cheaper?</h2></div>
+  <div class="txt">
+    <p>Best-of-4 spends four attempts even on easy starts. We tried two ways to spend fewer: retry only when the judge scores an attempt below 0.5, and give hard tasks more attempts than easy ones.</p>
+    <p>Neither beats simply fixing the number of attempts. The judge rejects too many attempts that had already succeeded, so it asks for retries that were not needed.</p>
+  </div>
+  <div class="tbl-wrap">
+    <table class="sets">
+      <thead><tr><th scope="col">Strategy</th><th scope="col">Attempts per start</th><th scope="col">Success</th></tr></thead>
+      <tbody>
+        <tr><td>One attempt</td><td class="n">1</td><td class="n">67.2%</td></tr>
+        <tr><td>Best of 2</td><td class="n">2</td><td class="n">71.9%</td></tr>
+        <tr><td>More attempts for hard tasks</td><td class="n">2.4</td><td class="n">71.8%</td></tr>
+        <tr><td>Retry when the judge is unhappy</td><td class="n">2.4</td><td class="n">72.2%</td></tr>
+        <tr><td>Best of 3</td><td class="n">3</td><td class="n">73.5%</td></tr>
+        <tr><td>Best of 4</td><td class="n">4</td><td class="n">74.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">250 training start states, four logged attempts each, picked by the LIBERO-finetuned judge.</p>
+</section>
+
 <section class="panel" id="limits" aria-labelledby="limits-h">
   <div class="ph"><h2 id="limits-h">Limits</h2></div>
   <ul class="limits">
-    <li>Each student was trained once, and only the main student was evaluated on more than one seed.</li>
-    <li>The training sets differ in size (156 to 250 episodes), so set size and set quality are confounded.</li>
+    <li>Only the main student was trained more than once. The other students are single runs, and one run can move the score by several points.</li>
+    <li>The first four training sets differ in size (156 to 250 episodes). Same-size versions are trained and still being scored.</li>
     <li>The better judge was fine-tuned on LIBERO, the simulator we test in.</li>
     <li>Best-of-<i>N</i> times leave out the judge's own run time.</li>
   </ul>
