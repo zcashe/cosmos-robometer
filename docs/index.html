@@ -189,6 +189,23 @@
   </div>
   <div class="chart tbl-wrap" id="chart-sets"><p class="await">Waiting for data</p></div>
   <p class="cap" id="sets-pair"></p>
+  <div class="sub">
+    <h3>Why the judge's picks work</h3>
+    <p class="txt-n">Those sets differ in size, so we trained more students on sets of exactly 156 episodes. Keeping the judge's start states but swapping in a different attempt at each one works just as well. Picking start states at random works about half as well. The judge helps by choosing which situations to practice, not which attempt to copy.</p>
+    <div class="tbl-wrap">
+      <table class="sets">
+        <thead><tr><th scope="col">Training set, 156 episodes</th><th scope="col">Really succeeded</th><th scope="col">Held-out success</th><th scope="col">vs base, 95% CI</th></tr></thead>
+        <tbody>
+          <tr class="key"><td>Judge's picks, mean of 3 training runs</td><td class="n">93%</td><td class="n">71.9%</td><td class="n">+7.9 [+2.7, +13.2]</td></tr>
+          <tr><td>Judge's start states, other attempts</td><td class="n">93%</td><td class="n">70.0%</td><td class="n">+6.0 [+0.0, +11.6]</td></tr>
+          <tr><td>Random start states, true successes only</td><td class="n">100%</td><td class="n">67.6%</td><td class="n">+3.6 [-2.4, +9.6]</td></tr>
+          <tr><td>Random start states, random attempts</td><td class="n">93%</td><td class="n">66.8%</td><td class="n">+2.8 [-3.2, +8.4]</td></tr>
+          <tr><td>Base judge's top 156 picks</td><td class="n">83%</td><td class="n">66.4%</td><td class="n">+2.4 [-3.2, +8.0]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">One batch of evaluations on the 250 held-out start states; the base policy scored 64.0% in it. Students on the judge's start states beat students on random start states by 4.2 points (95% CI +0.5 to +8.1).</p>
+  </div>
 </section>
 
 <section class="panel" id="novel" aria-labelledby="novel-h">
@@ -241,7 +258,7 @@
   <div class="ph"><h2 id="limits-h">Limits</h2></div>
   <ul class="limits">
     <li>Only the main student was trained more than once. The other students are single runs, and one run can move the score by several points.</li>
-    <li>The first four training sets differ in size (156 to 250 episodes). Same-size versions are trained and still being scored.</li>
+    <li>Each evaluation covers 250 start states, so differences under about 6 points between two single runs are within noise.</li>
     <li>The better judge was fine-tuned on LIBERO, the simulator we test in.</li>
     <li>Best-of-<i>N</i> times leave out the judge's own run time.</li>
   </ul>
